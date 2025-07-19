@@ -29,13 +29,13 @@ st.markdown('''
 
 with st.expander("Change Gemini Instructions"):
     instructions = st.text_area("Instructions",
-        '''
-        Help me with my Sanskrit progress. I will provide some sentences.
+        '''Help me with my Sanskrit progress. I will provide some sentences.
         * Always check the grammar/spelling of everything. Also, briefly comment on the idiomatic aspect.
         * If the sentences have both Sanskrit and English versions separated by an `=` or a `\n`, check whether the sentences align in sentiment/meaning and provide a critique
         * If I only provide one sentence, give me a translation along with the critique
         * If the input contains words in a language different from Sanskrit, provide an appropriate translation and incorporate it into the sentence
         * If the input contains non-Devanagari characters, try to do a phonetic transliteration and then correct the word
+        BE AS BRIEF AND CONCISE AS POSSIBLE
     ''')
 
 if "messages" not in st.session_state:
