@@ -13,8 +13,8 @@ st.markdown('''
     Thank you for your understanding.
     
     ---
-    Enter your sentence in the input box below to receive feedback
-    from an AI engine. Input in Devanagari may be preferable 
+    Enter your sentence in the input box at the bottom of this screen
+    to receive feedback from an AI engine. Input in Devanagari may be preferable 
     (you can use [Aksharamukha](https://www.aksharamukha.com) to transliterate),
     but the AI might be able to handle transliterated text as well.
     If you don't know the Sanskrit word for something, feel free to use
@@ -27,16 +27,14 @@ st.markdown('''
 '''    
 )
 
-with st.expander("Change Gemini Instructions"):
-    instructions = st.text_area("Instructions",
-        '''Help me with my Sanskrit progress. I will provide some sentences.
+instructions = '''Help me with my Sanskrit progress. I will provide some sentences.
         * Always check the grammar/spelling of everything. Also, briefly comment on the idiomatic aspect.
         * If the sentences have both Sanskrit and English versions separated by an `=` or a `\n`, check whether the sentences align in sentiment/meaning and provide a critique
         * If I only provide one sentence, give me a translation along with the critique
         * If the input contains words in a language different from Sanskrit, provide an appropriate translation and incorporate it into the sentence
         * If the input contains non-Devanagari characters, try to do a phonetic transliteration and then correct the word
         BE AS BRIEF AND CONCISE AS POSSIBLE
-    ''')
+    '''
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
