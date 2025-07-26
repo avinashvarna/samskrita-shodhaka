@@ -4,8 +4,22 @@ from google.genai import types
 
 client = genai.Client(api_key=st.secrets["gemini_api_key"])
 
+
+@st.cache_data
+def get_gemini_response(text):
+    api_response = client.models.generate_content(
+        model="gemini-2.5-pro",
+        config=types.GenerateContentConfig(system_instruction=SYSTEM_INSTRUCTION),
+        contents=text,
+    )
+    parts = api_response.candidates[0].content.parts
+    response = "".join(part.text for part in parts)
+    return response
+
+
 st.title("संस्कृत-शोधकः")
-st.markdown('''
+st.markdown(
+    """
     **Note**: Generating the response *will* be slow. Please be patient!
     
     Please also note that this demo supports a limited number of requests and 
@@ -24,17 +38,25 @@ st.markdown('''
       - maam सह आगच्चसि to the shop?
       - train kadaa leave?
       - pustakam kutra keep?
-'''    
+"""
 )
 
-instructions = '''Help me with my Sanskrit progress. I will provide some sentences.
+SYSTEM_INSTRUCTION = """Help me with my Sanskrit progress. I will provide some sentences.
         * Always check the grammar/spelling of everything. Also, briefly comment on the idiomatic aspect.
         * If the sentences have both Sanskrit and English versions separated by an `=` or a `\n`, check whether the sentences align in sentiment/meaning and provide a critique
         * If I only provide one sentence, give me a translation along with the critique
         * If the input contains words in a language different from Sanskrit, provide an appropriate translation and incorporate it into the sentence
         * If the input contains non-Devanagari characters, try to do a phonetic transliteration and then correct the word
         BE AS BRIEF AND CONCISE AS POSSIBLE
-    '''
+    """
+
+# Collapsible prompt section
+with st.expander("View Prompt (Non-editable)"):
+    st.markdown(
+        "Feel free to copy the prompt and experiment with it at "
+        "[Google AI studio](https://aistudio.google.com/prompts/new_chat):"
+    )
+    st.markdown(SYSTEM_INSTRUCTION)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -44,19 +66,16 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 if prompt := st.chat_input("संस्कृतवाक्यम् (e.g. try - maam सह आगच्चसि to the shop?)"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    if not prompt.strip():
+        st.error("Please enter some text.")
+    else:
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
-    with st.chat_message("assistant"):
-        api_response = client.models.generate_content(
-            model="gemini-2.5-pro",
-            config=types.GenerateContentConfig(
-                system_instruction=instructions),
-            contents=prompt
-        )
-        parts = api_response.candidates[0].content.parts
-        response = "".join(part.text for part in parts)
-        st.markdown(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    
+        with st.spinner("Generating response ... Please wait."):
+            response = get_gemini_response(prompt)
+
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
